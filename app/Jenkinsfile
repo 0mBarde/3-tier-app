@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         SSH_CRED_ID = 'deployment-key'
+        // I have pre-filled your actual Repo URL based on your logs
+        YOUR_REPO_URL = 'https://github.com/0mBarde/3-tier-app.git'
     }
 
     stages {
@@ -15,6 +17,7 @@ pipeline {
         stage('Security: Infra (Checkov)') {
             steps {
                 dir('infra') {
+                    // Soft-fail ensures the build doesn't stop, but you see the security report
                     sh 'checkov -d . --soft-fail' 
                 }
             }
@@ -25,6 +28,7 @@ pipeline {
                 dir('infra') {
                     sh 'terraform init'
                     sh 'terraform apply -auto-approve'
+                    // Save IPs to files so we can use them in the next stage
                     sh 'terraform output -raw app_private_ip > ../app_ip.txt'
                     sh 'terraform output -raw web_private_ip > ../web_ip.txt'
                 }
@@ -33,9 +37,6 @@ pipeline {
 
         stage('Security: App (Trivy)') {
             steps {
-		sh 'ls -la app/'
-                sh 'cat app/requirements.txt'
-		
                 echo "Scanning Backend Code..."
                 sh 'trivy fs app/ --scanners vuln --severity HIGH,CRITICAL'
                 
@@ -52,37 +53,64 @@ pipeline {
                     
                     sshagent(credentials: [SSH_CRED_ID]) {
                         
-                        // 1. Update APP Server
+                        // --- 1. DEPLOY TO APP SERVER (BACKEND) ---
                         echo "Deploying to App Server (${APP_IP})..."
                         sh """
                             ssh -o StrictHostKeyChecking=no ec2-user@${APP_IP} '
-                                # FIX: Take ownership of the repo from Root
+                                # ROBUSTNESS LOOP: Wait up to 3 mins for setup.sh to finish
+                                echo "Checking if App folder exists..."
+                                for i in {1..18}; do
+                                    if [ -d "/home/ec2-user/3-tier-app" ]; then
+                                        echo "App folder found! Proceeding..."
+                                        break
+                                    fi
+                                    echo "Waiting for setup.sh to complete... (Attempt \$i/18)"
+                                    sleep 10
+                                done
+                                
+                                # FIX PERMISSIONS (Root owned it, we need ec2-user to own it)
                                 sudo chown -R ec2-user:ec2-user /home/ec2-user/3-tier-app
-                                
-                                # Now we can pull safely
                                 git config --global --add safe.directory /home/ec2-user/3-tier-app
-                                cd 3-tier-app
-                                git pull origin main
                                 
-                                # Restart App
-                                pip3 install -r app/requirements.txt || true
+                                # UPDATE CODE
+                                cd 3-tier-app
+                                git remote set-url origin ${YOUR_REPO_URL}
+                                git fetch origin
+                                git reset --hard origin/main
+                                
+                                # RESTART APP
+                                pip3 install -r app/requirements.txt
                                 sudo systemctl restart backend
                             '
                         """
                         
-                        // 2. Update WEB Server
+                        // --- 2. DEPLOY TO WEB SERVER (FRONTEND) ---
                         echo "Deploying to Web Server (${WEB_IP})..."
                         sh """
                             ssh -o StrictHostKeyChecking=no ec2-user@${WEB_IP} '
-                                # FIX: Take ownership of the repo from Root
+                                # ROBUSTNESS LOOP
+                                echo "Checking if App folder exists..."
+                                for i in {1..18}; do
+                                    if [ -d "/home/ec2-user/3-tier-app" ]; then
+                                        echo "App folder found! Proceeding..."
+                                        break
+                                    fi
+                                    echo "Waiting for setup.sh to complete... (Attempt \$i/18)"
+                                    sleep 10
+                                done
+                                
+                                # FIX PERMISSIONS
                                 sudo chown -R ec2-user:ec2-user /home/ec2-user/3-tier-app
-                                
                                 git config --global --add safe.directory /home/ec2-user/3-tier-app
-                                cd 3-tier-app
-                                git pull origin main
                                 
-                                # Restart Frontend
-                                pip3 install -r frontend/requirements.txt || true
+                                # UPDATE CODE
+                                cd 3-tier-app
+                                git remote set-url origin ${YOUR_REPO_URL}
+                                git fetch origin
+                                git reset --hard origin/main
+                                
+                                # RESTART APP
+                                pip3 install -r frontend/requirements.txt
                                 sudo systemctl restart frontend
                             '
                         """

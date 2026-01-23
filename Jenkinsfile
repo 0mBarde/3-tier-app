@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         SSH_CRED_ID = 'deployment-key'
+        // REPLACE THIS WITH YOUR EXACT GITHUB URL
+        YOUR_REPO_URL = 'https://github.com/0mBarde/3-tier-app.git'
     }
 
     stages {
@@ -33,6 +35,7 @@ pipeline {
 
         stage('Security: App (Trivy)') {
             steps {
+                // Scan the code in the Jenkins workspace (This should work now!)
                 echo "Scanning Backend Code..."
                 sh 'trivy fs app/ --scanners vuln --severity HIGH,CRITICAL'
                 
@@ -49,37 +52,40 @@ pipeline {
                     
                     sshagent(credentials: [SSH_CRED_ID]) {
                         
-                        // 1. Update APP Server
+                        // 1. Update APP Server (Backend)
                         echo "Deploying to App Server (${APP_IP})..."
                         sh """
                             ssh -o StrictHostKeyChecking=no ec2-user@${APP_IP} '
-                                # FIX: Take ownership of the repo from Root
+                                # 1. Fix Ownership
                                 sudo chown -R ec2-user:ec2-user /home/ec2-user/3-tier-app
-                                
-                                # Now we can pull safely
                                 git config --global --add safe.directory /home/ec2-user/3-tier-app
                                 cd 3-tier-app
-                                git pull origin main
                                 
-                                # Restart App
-                                pip3 install -r app/requirements.txt || true
+                                # 2. CRITICAL FIX: Switch to YOUR Repository
+                                git remote set-url origin ${YOUR_REPO_URL}
+                                git fetch origin
+                                git reset --hard origin/main
+                                
+                                # 3. Install & Restart
+                                pip3 install -r app/requirements.txt
                                 sudo systemctl restart backend
                             '
                         """
                         
-                        // 2. Update WEB Server
+                        // 2. Update WEB Server (Frontend)
                         echo "Deploying to Web Server (${WEB_IP})..."
                         sh """
                             ssh -o StrictHostKeyChecking=no ec2-user@${WEB_IP} '
-                                # FIX: Take ownership of the repo from Root
                                 sudo chown -R ec2-user:ec2-user /home/ec2-user/3-tier-app
-                                
                                 git config --global --add safe.directory /home/ec2-user/3-tier-app
                                 cd 3-tier-app
-                                git pull origin main
                                 
-                                # Restart Frontend
-                                pip3 install -r frontend/requirements.txt || true
+                                # Switch Repo here too
+                                git remote set-url origin ${YOUR_REPO_URL}
+                                git fetch origin
+                                git reset --hard origin/main
+                                
+                                pip3 install -r frontend/requirements.txt
                                 sudo systemctl restart frontend
                             '
                         """

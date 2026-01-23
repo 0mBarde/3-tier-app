@@ -1,0 +1,120 @@
+nginx configuration:
+
+
+sudo yum update -y
+sudo yum install nginx -y
+sudo systemctl enable nginx
+sudo systemctl start nginx
+
+To finalize your setup on the Web-Server (t3.micro), you need to install and configure Nginx as a reverse proxy. This will allow your users to access the application via the standard Port 80 (HTTP) instead of having to type :8501 in their browser.
+
+Step 1: Install Nginx on Amazon Linux 2023
+Connect to your Web-Server EC2 via SSH and run the following commands to install and start the web server:
+
+Bash
+
+sudo yum update -y
+sudo yum install nginx -y
+sudo systemctl enable nginx
+sudo systemctl start nginx
+
+
+Step 2: Configure the Reverse Proxy
+You need to create a configuration file that directs traffic from Port 80 to your local Streamlit instance. Streamlit uses WebSockets, so specific headers are required to prevent the "Please Wait" loading hang.
+
+Create a new config file: sudo nano /etc/nginx/conf.d/streamlit_app.conf
+
+Paste the following configuration:
+
+Nginx
+
+server {
+    listen 80;
+    server_name _;
+
+    location / {
+        proxy_pass http://127.0.0.1:8501/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket support (Required for Streamlit)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 86400;
+    }
+}
+
+
+Step 3: Streamlit Configuration
+For Streamlit to work correctly behind a proxy, it is often necessary to disable CORS (Cross-Origin Resource Sharing).
+
+Create a configuration folder and file in your home directory: mkdir ~/.streamlit nano ~/.streamlit/config.toml
+
+Add these settings:
+
+[server]
+port = 8501
+address = "127.0.0.1"
+enableCORS = false
+enableXsrfProtection = false
+
+You need to disable the "Welcome to Nginx" server block that is built into the main configuration file.
+
+Open the main Nginx config: sudo nano /etc/nginx/nginx.conf
+
+Find the server { ... } block inside the http { ... } section. It usually looks like this:
+server {
+    listen       80 default_server;
+    listen       [::]:80 default_server;
+    server_name  _;
+    root         /usr/share/nginx/html;
+    # ... more lines ...
+}
+
+Now, go back to your own configuration file to make sure it takes over as the primary handler.
+
+Open your config: sudo nano /etc/nginx/conf.d/streamlit_app.conf
+
+Add default_server to the listen line:
+server {
+    listen 80 default_server; # This makes it the primary block
+    server_name _;
+    ...
+}
+
+
+2. Update your Streamlit Config
+To ensure your configuration is the "primary" one, update your file at /etc/nginx/conf.d/streamlit_app.conf:
+
+Nginx
+
+server {
+    listen 80 default_server; # Add 'default_server' here
+    server_name _;
+
+    location / {
+        proxy_pass http://127.0.0.1:8501/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket support (Required for Streamlit)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 86400;
+    }
+}
+
+
+Test and Restart
+Run the test again to ensure the conflict is gone, then apply the changes:
+sudo nginx -t
+# You should now see: nginx: the configuration file ... syntax is ok
+# (The "conflicting server name" warning should be gone)
+
+sudo systemctl restart nginx

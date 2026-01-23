@@ -1,0 +1,12 @@
+# Ignore Terraform binary folders
+**/.terraform/
+
+# Ignore State files (Security Risk if pushed!)
+*.tfstate
+*.tfstate.backup
+
+# Ignore Crash logs
+crash.log
+
+# Ignore Keys (Just in case)
+*.pem

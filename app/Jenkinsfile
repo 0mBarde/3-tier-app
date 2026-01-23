@@ -33,6 +33,9 @@ pipeline {
 
         stage('Security: App (Trivy)') {
             steps {
+		sh 'ls -la app/'
+                sh 'cat app/requirements.txt'
+		
                 echo "Scanning Backend Code..."
                 sh 'trivy fs app/ --scanners vuln --severity HIGH,CRITICAL'
                 

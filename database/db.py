@@ -11,7 +11,7 @@ class Student(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     course = db.Column(db.String(100))
-    gpa = db.Column(db.Float, default=0.0)
+    gpa = db.Column(db.Float, default=0.0) 
     created_at = db.Column(db.String(20), default=datetime.now().strftime("%Y-%m-%d"))
 
 with db_app.app_context():

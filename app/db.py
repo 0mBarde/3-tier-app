@@ -25,3 +25,25 @@ def add_student_to_db(name, email, department, gpa):
     new_student = Student(name=name, email=email, department=department, gpa=gpa)
     db.session.add(new_student)
     db.session.commit()
+
+# ... (existing code remains the same)
+
+def update_student_in_db(student_id, data):
+    student = Student.query.get(student_id)
+    if student:
+        student.name = data.get('name', student.name)
+        student.email = data.get('email', student.email)
+        # Handle "course" from frontend mapping to "department" in DB
+        student.department = data.get('course', student.department)
+        student.gpa = data.get('gpa', student.gpa)
+        db.session.commit()
+        return True
+    return False
+
+def delete_student_from_db(student_id):
+    student = Student.query.get(student_id)
+    if student:
+        db.session.delete(student)
+        db.session.commit()
+        return True
+    return False

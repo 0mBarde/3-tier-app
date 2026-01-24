@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
-from db import app, db, get_all_students, add_student_to_db 
+from db import (app, db, get_all_students, add_student_to_db, 
+                update_student_in_db, delete_student_from_db)
 
 @app.route('/students', methods=['GET'])
 def list_students():
@@ -15,6 +16,27 @@ def create_student():
         data = request.json
         add_student_to_db(data['name'], data['email'], data.get('department'), data.get('gpa'))
         return jsonify({"message": "Student created successfully"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/students/<int:id>', methods=['PUT'])
+def update_student(id):
+    try:
+        data = request.json
+        success = update_student_in_db(id, data)
+        if success:
+            return jsonify({"message": "Student updated successfully"}), 200
+        return jsonify({"error": "Student not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/students/<int:id>', methods=['DELETE'])
+def delete_student(id):
+    try:
+        success = delete_student_from_db(id)
+        if success:
+            return jsonify({"message": "Student deleted successfully"}), 200
+        return jsonify({"error": "Student not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 

@@ -56,3 +56,59 @@ elif menu == "Enroll Student":
             if res.status_code == 201:
                 st.success(f"Successfully enrolled {name}!")
                 st.balloons()
+                
+elif menu == "Manage Database":
+    st.subheader("🛠️ Administrative Control Panel")
+    
+    # Fetch latest data for selection
+    response = requests.get(API_URL)
+    if response.status_code == 200:
+        data = response.json()
+        df = pd.DataFrame(data)
+        
+        if df.empty:
+            st.info("The database is currently empty.")
+        else:
+            # 1. Search and Select Student
+            student_names = df['name'].tolist()
+            selected_student_name = st.selectbox("Select a student to modify or remove", student_names)
+            
+            # Get the specific student data
+            student_row = df[df['name'] == selected_student_name].iloc[0]
+            student_id = student_row.get('id') # Assuming your API returns an 'id' field
+
+            st.write(f"**Managing Record for:** {selected_student_name} (ID: {student_id})")
+            
+            # 2. Update and Delete Tabs
+            tab1, tab2 = st.tabs(["Update Info", "Danger Zone"])
+            
+            with tab1:
+                with st.form("update_form"):
+                    new_email = st.text_input("Update Email", value=student_row['email'])
+                    new_course = st.selectbox("Update Department", 
+                                            ["Computer Science", "Data Science", "AI", "Business"], 
+                                            index=["Computer Science", "Data Science", "AI", "Business"].index(student_row['course']))
+                    new_gpa = st.slider("Update GPA", 0.0, 4.0, float(student_row['gpa']))
+                    
+                    if st.form_submit_button("Save Changes"):
+                        update_payload = {"name": selected_student_name, "email": new_email, "course": new_course, "gpa": new_gpa}
+                        # Typically PUT /students/{id}
+                        update_res = requests.put(f"{API_URL}/{student_id}", json=update_payload)
+                        if update_res.status_code in [200, 204]:
+                            st.success("Student record updated!")
+                            st.rerun()
+                        else:
+                            st.error("Failed to update record.")
+
+            with tab2:
+                st.warning("Action is irreversible!")
+                if st.button(f"🗑️ Permanent Delete {selected_student_name}"):
+                    # Typically DELETE /students/{id}
+                    delete_res = requests.delete(f"{API_URL}/{student_id}")
+                    if delete_res.status_code in [200, 204]:
+                        st.success("Record deleted successfully.")
+                        st.rerun()
+                    else:
+                        st.error("Could not delete record.")
+    else:
+        st.error("Unable to fetch data from the API.")

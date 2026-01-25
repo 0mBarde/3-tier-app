@@ -163,6 +163,12 @@ resource "aws_instance" "Management" {
   key_name               = aws_key_pair.deployer.key_name
   iam_instance_profile   = aws_iam_instance_profile.jenkins_profile.name
   user_data              = file("setup.sh")
+  
+  root_block_device {
+    volume_size = 60
+    volume_type = "gp3"
+    encrypted   = true
+  }  
 
   tags = { Name = "Management-Server" }
 }

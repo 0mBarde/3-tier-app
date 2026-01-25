@@ -125,7 +125,7 @@ resource "aws_security_group" "db_sg" {
 # --- INSTANCES (With Static IPs) ---
 resource "aws_instance" "web" {
   ami                    = data.aws_ami.amazon_linux.id
-  instance_type          = "t3.micro"
+  instance_type          = "m7i-flex.large"
   subnet_id              = data.aws_subnet.web.id
   vpc_security_group_ids = [aws_security_group.web_sg.id]
   key_name               = "three-tier-key"
@@ -147,7 +147,7 @@ resource "aws_instance" "web" {
 
 resource "aws_instance" "app" {
   ami                    = data.aws_ami.amazon_linux.id
-  instance_type          = "t3.micro"
+  instance_type          = "m7i-flex.large"
   subnet_id              = data.aws_subnet.app.id
   vpc_security_group_ids = [aws_security_group.app_sg.id]
   key_name               = "three-tier-key"
@@ -169,7 +169,7 @@ resource "aws_instance" "app" {
 
 resource "aws_instance" "db" {
   ami                    = data.aws_ami.amazon_linux.id
-  instance_type          = "t3.micro"
+  instance_type          = "m7i-flex.large"
   subnet_id              = data.aws_subnet.db.id
   vpc_security_group_ids = [aws_security_group.db_sg.id]
   key_name               = "three-tier-key"

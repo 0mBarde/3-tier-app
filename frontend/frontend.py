@@ -30,7 +30,9 @@ if menu == "Dashboard":
         # Modern Metrics
         col1, col2, col3 = st.columns(3)
         col1.metric("Total Students", len(df))
-        col2.metric("Average GPA", round(df['gpa'].astype(float).mean(), 2) if not df.empty else 0)
+        # Safely handle GPA calculation if empty or missing
+        avg_gpa = round(df['gpa'].astype(float).mean(), 2) if not df.empty and 'gpa' in df.columns else 0
+        col2.metric("Average GPA", avg_gpa)
         col3.metric("Active Enrollments", "94%")
 
         st.divider()
@@ -47,15 +49,19 @@ elif menu == "Enroll Student":
             name = st.text_input("Full Name")
             email = st.text_input("Institutional Email")
         with col2:
-            course = st.selectbox("Department", ["Computer Science", "Data Science", "AI", "Business"])
+            # Note: Sending 'department' as key to match DB, UI label remains 'Department'
+            department = st.selectbox("Department", ["Computer Science", "Data Science", "AI", "Business"])
             gpa = st.slider("Current GPA", 0.0, 4.0, 3.5)
 
         if st.button("Complete Enrollment"):
-            payload = {"name": name, "email": email, "course": course, "gpa": gpa}
+            # FIX: Payload key must be 'department' to match DB schema
+            payload = {"name": name, "email": email, "department": department, "gpa": gpa}
             res = requests.post(API_URL, json=payload)
             if res.status_code == 201:
                 st.success(f"Successfully enrolled {name}!")
                 st.balloons()
+            else:
+                st.error(f"Failed to enroll. Status: {res.status_code}")
                 
 elif menu == "Manage Database":
     st.subheader("🛠️ Administrative Control Panel")
@@ -75,7 +81,7 @@ elif menu == "Manage Database":
             
             # Get the specific student data
             student_row = df[df['name'] == selected_student_name].iloc[0]
-            student_id = student_row.get('id') # Assuming your API returns an 'id' field
+            student_id = student_row.get('id')
 
             st.write(f"**Managing Record for:** {selected_student_name} (ID: {student_id})")
             
@@ -85,14 +91,25 @@ elif menu == "Manage Database":
             with tab1:
                 with st.form("update_form"):
                     new_email = st.text_input("Update Email", value=student_row['email'])
-                    new_course = st.selectbox("Update Department", 
-                                            ["Computer Science", "Data Science", "AI", "Business"], 
-                                            index=["Computer Science", "Data Science", "AI", "Business"].index(student_row['course']))
+                    
+                    # FIX: Handle potential missing 'department' key safely
+                    current_dept = student_row.get('department', 'Computer Science') 
+                    # Ensure current_dept is in the list, otherwise default to index 0
+                    dept_options = ["Computer Science", "Data Science", "AI", "Business"]
+                    dept_index = dept_options.index(current_dept) if current_dept in dept_options else 0
+                    
+                    new_department = st.selectbox("Update Department", 
+                                            dept_options, 
+                                            index=dept_index)
+                                            
                     new_gpa = st.slider("Update GPA", 0.0, 4.0, float(student_row['gpa']))
                     
-                    if st.form_submit_button("Save Changes"):
-                        update_payload = {"name": selected_student_name, "email": new_email, "course": new_course, "gpa": new_gpa}
-                        # Typically PUT /students/{id}
+                    # FIX: Added Submit Button inside the form (Streamlit requirement)
+                    submitted = st.form_submit_button("Save Changes")
+                    
+                    if submitted:
+                        # FIX: Payload key must be 'department'
+                        update_payload = {"name": selected_student_name, "email": new_email, "department": new_department, "gpa": new_gpa}
                         update_res = requests.put(f"{API_URL}/{student_id}", json=update_payload)
                         if update_res.status_code in [200, 204]:
                             st.success("Student record updated!")
@@ -103,7 +120,6 @@ elif menu == "Manage Database":
             with tab2:
                 st.warning("Action is irreversible!")
                 if st.button(f"🗑️ Permanent Delete {selected_student_name}"):
-                    # Typically DELETE /students/{id}
                     delete_res = requests.delete(f"{API_URL}/{student_id}")
                     if delete_res.status_code in [200, 204]:
                         st.success("Record deleted successfully.")

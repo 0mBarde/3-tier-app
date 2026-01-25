@@ -131,6 +131,17 @@ resource "aws_instance" "web" {
   key_name               = "three-tier-key"
   private_ip             = "10.0.1.191"
   user_data              = file("${path.module}/setup_web.sh")
+  
+  root_block_device {
+
+    volume_size = 10
+
+    volume_type = "gp3"
+
+    encrypted   = true
+
+  }
+
   tags                   = { Name = "Web-Server" }
 }
 
@@ -142,6 +153,17 @@ resource "aws_instance" "app" {
   key_name               = "three-tier-key"
   private_ip             = "10.0.2.150"
   user_data              = file("${path.module}/setup_app.sh")
+
+  root_block_device {
+
+    volume_size = 10
+
+    volume_type = "gp3"
+
+    encrypted   = true
+
+  }
+
   tags                   = { Name = "App-Server" }
 }
 
@@ -153,6 +175,17 @@ resource "aws_instance" "db" {
   key_name               = "three-tier-key"
   private_ip             = "10.0.3.179"
   user_data              = file("${path.module}/setup_db.sh")
+  
+  root_block_device {
+
+    volume_size = 10
+
+    volume_type = "gp3"
+
+    encrypted   = true
+
+  }
+
   tags                   = { Name = "DB-Server" }
 }
 

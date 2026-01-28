@@ -2,8 +2,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-
-# Replace with your DB Server Private IP
 DB_PRIVATE_IP = "10.0.3.179" 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://admin_user:SecurePassword123@{DB_PRIVATE_IP}/university_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -26,14 +24,11 @@ def add_student_to_db(name, email, department, gpa):
     db.session.add(new_student)
     db.session.commit()
 
-# ... (existing code remains the same)
-
 def update_student_in_db(student_id, data):
     student = Student.query.get(student_id)
     if student:
         student.name = data.get('name', student.name)
         student.email = data.get('email', student.email)
-        # Handle "course" from frontend mapping to "department" in DB
         student.department = data.get('course', student.department)
         student.gpa = data.get('gpa', student.gpa)
         db.session.commit()

@@ -3,10 +3,9 @@ pipeline {
 
     environment {
         SSH_CRED_ID = 'deployment-key'
-        // I have pre-filled your actual Repo URL based on your logs
         YOUR_REPO_URL = 'https://github.com/0mBarde/3-tier-app.git'
     }
-
+    
     stages {
         stage('Checkout') {
             steps {
@@ -17,7 +16,6 @@ pipeline {
         stage('Security: Infra (Checkov)') {
             steps {
                 dir('infra') {
-                    // Soft-fail ensures the build doesn't stop, but you see the security report
                     sh 'checkov -d . --soft-fail' 
                 }
             }
@@ -28,7 +26,6 @@ pipeline {
                 dir('infra') {
                     sh 'terraform init'
                     sh 'terraform apply -auto-approve'
-                    // Save IPs to files so we can use them in the next stage
                     sh 'terraform output -raw app_private_ip > ../app_ip.txt'
                     sh 'terraform output -raw web_private_ip > ../web_ip.txt'
                 }
@@ -52,8 +49,6 @@ pipeline {
                     def WEB_IP = readFile('web_ip.txt').trim()
                     
                     sshagent(credentials: [SSH_CRED_ID]) {
-                        
-                        // --- 1. DEPLOY TO APP SERVER (BACKEND) ---
                         echo "Deploying to App Server (${APP_IP})..."
                         sh """
                             ssh -o StrictHostKeyChecking=no ec2-user@${APP_IP} '
@@ -83,8 +78,6 @@ pipeline {
                                 sudo systemctl restart backend
                             '
                         """
-                        
-                        // --- 2. DEPLOY TO WEB SERVER (FRONTEND) ---
                         echo "Deploying to Web Server (${WEB_IP})..."
                         sh """
                             ssh -o StrictHostKeyChecking=no ec2-user@${WEB_IP} '

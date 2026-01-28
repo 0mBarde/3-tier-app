@@ -1,10 +1,9 @@
 #!/bin/bash
-# 1. Install MariaDB Service
+# 1. Installing MariaDB Service
 sudo dnf install mariadb105-server -y
 sudo systemctl enable --now mariadb
 
 # 2. Database & User Configuration
-# Replace 10.0.2.% with your actual App Subnet CIDR if different
 APP_SUBNET="10.0.2.%" 
 
 sudo mariadb -e "CREATE DATABASE IF NOT EXISTS university_db;"
@@ -12,7 +11,7 @@ sudo mariadb -e "CREATE USER IF NOT EXISTS 'admin_user'@'$APP_SUBNET' IDENTIFIED
 sudo mariadb -e "GRANT ALL PRIVILEGES ON university_db.* TO 'admin_user'@'$APP_SUBNET';"
 sudo mariadb -e "FLUSH PRIVILEGES;"
 
-# 3. Initialize Schema
+# 3. Initializing Schema
 sudo mariadb -D university_db -e "
 CREATE TABLE IF NOT EXISTS students (
     id INT AUTO_INCREMENT PRIMARY KEY,

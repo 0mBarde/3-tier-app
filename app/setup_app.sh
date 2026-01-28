@@ -1,17 +1,17 @@
 #!/bin/bash
-# 1. Install Dependencies
+# 1. Installing Dependencies
 sudo dnf update -y
 sudo dnf install python3-pip git -y
 
-# 2. Clone Your Repository
+# 2. Cloning the Repository
 cd /home/ec2-user
 git clone https://github.com/MananKansagra/3-tier-app.git
 cd 3-tier-app/app
 
-# 3. Install Backend Packages
+# 3. Installing Backend Packages
 pip install flask flask-sqlalchemy pymysql
 
-# 4. Create Backend Persistence Service
+# 4. Creating Backend Persistence Service
 sudo bash -c "cat <<EOF > /etc/systemd/system/backend.service
 [Unit]
 Description=Flask Backend
@@ -27,7 +27,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF"
 
-# 5. Start Backend
+# 5. Starting Backend
 sudo systemctl daemon-reload
 sudo systemctl enable backend
 sudo systemctl start backend

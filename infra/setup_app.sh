@@ -1,20 +1,18 @@
 #!/bin/bash
-# 1. Install Dependencies
+# 1. Installing Dependencies
 sudo dnf update -y
 sudo dnf install python3-pip git -y
 
-# 2. Clone Your Repository
+# 2. Cloning the Repository
 cd /home/ec2-user
-# Remove directory if it already exists to avoid git clone errors
 rm -rf 3-tier-app 
 git clone https://github.com/MananKansagra/3-tier-app.git
 cd 3-tier-app/app
 
-# 3. Install Backend Packages
-# Using pip3 directly to ensure it targets the correct Python version
+# 3. Installing Backend Packages
 pip3 install flask flask-sqlalchemy pymysql cryptography
 
-# 4. Create Backend Persistence Service
+# 4. Creating Backend Persistence Service
 sudo bash -c "cat <<EOF > /etc/systemd/system/backend.service
 [Unit]
 Description=Flask Backend
@@ -31,12 +29,12 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF"
 
-# 5. Start Backend
+# 5. Starting Backend
 sudo systemctl daemon-reload
 sudo systemctl enable backend
 sudo systemctl start backend
 
-# 6. Retry Loop: Wait until the service is actually "active"
+# 6. Waiting until the service is actually "active"
 echo "Verifying backend service status..."
 MAX_RETRIES=10
 RETRY_COUNT=0
@@ -55,6 +53,6 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
 done
 
 echo "Error: Backend service failed to start after $MAX_RETRIES attempts."
-# Check logs if it fails
+# Checking logs if it fails
 sudo journalctl -u backend --no-pager | tail -n 20
 exit 1

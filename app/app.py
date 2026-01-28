@@ -41,7 +41,7 @@ def delete_student(id):
         return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
-    # Initialize the database table remotely if it doesn't exist
+    # Initializing the database table remotely if it doesn't exist
     with app.app_context():
         db.create_all()
     # Listen on all interfaces so the Web Server can reach this instance

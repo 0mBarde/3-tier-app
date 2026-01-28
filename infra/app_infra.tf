@@ -8,7 +8,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# --- DATA SOURCES (Connects to the Backbone) ---
+# DATA SOURCES
 data "aws_vpc" "selected" {
   filter {
     name   = "tag:Name"
@@ -49,7 +49,7 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-# --- SECURITY GROUPS (Tiered & Secure) ---
+# SECURITY GROUPS
 resource "aws_security_group" "web_sg" {
   name   = "web-tier-sg"
   vpc_id = data.aws_vpc.selected.id
@@ -122,7 +122,7 @@ resource "aws_security_group" "db_sg" {
   }
 }
 
-# --- INSTANCES (With Static IPs) ---
+# INSTANCES
 resource "aws_instance" "web" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "m7i-flex.large"
@@ -189,7 +189,7 @@ resource "aws_instance" "db" {
   tags                   = { Name = "DB-Server" }
 }
 
-# --- EIPs (Public Access) ---
+# EIPs
 resource "aws_eip" "web_eip" {
   instance = aws_instance.web.id
   domain   = "vpc"
@@ -205,7 +205,7 @@ resource "aws_eip" "db_eip" {
   domain   = "vpc"
 }
 
-# --- OUTPUTS ---
+# OUTPUTS
 output "app_private_ip" {
   value = aws_instance.app.private_ip
 }

@@ -1,19 +1,18 @@
 #!/bin/bash
-# 1. Wait for system locks to release and install packages
+# 1. Waiting for system locks to release and install packages
 sudo dnf update -y
 sudo dnf install python3-pip nginx git -y
 
-# 2. Setup directory and clone repository
+# 2. Setting directory and cloning repository
 cd /home/ec2-user
 rm -rf 3-tier-app
 git clone https://github.com/MananKansagra/3-tier-app.git
 
-# 3. Install requirements into the ec2-user space
-# This ensures Streamlit is available at /home/ec2-user/.local/bin/streamlit
+# 3. Installing requirements into the ec2-user space
 sudo -u ec2-user pip3 install -r /home/ec2-user/3-tier-app/frontend/requirements.txt
 sudo -u ec2-user pip3 install python-dateutil==2.9.0
 
-# 4. Create Streamlit configuration to allow Nginx proxying
+# 4. Creating Streamlit configuration to allow Nginx proxying
 sudo -u ec2-user mkdir -p /home/ec2-user/.streamlit
 sudo -u ec2-user cat <<EOF > /home/ec2-user/.streamlit/config.toml
 [server]
@@ -23,7 +22,7 @@ enableCORS = false
 enableXsrfProtection = false
 EOF
 
-# 5. Configure Nginx to act as a gateway on Port 80
+# 5. Configuring Nginx to act as a gateway on Port 80
 sudo bash -c 'cat <<EOF > /etc/nginx/conf.d/streamlit_app.conf
 server {
     listen 80 default_server;
@@ -38,11 +37,10 @@ server {
 }
 EOF'
 
-# Fix common Nginx/Amazon Linux conflicts
 sudo sed -i 's/listen       80 default_server;/#listen       80 default_server;/' /etc/nginx/nginx.conf
 sudo setsebool -P httpd_can_network_connect 1
 
-# 6. Create the "Always On" service
+# 6. Creating the "Always On" service
 sudo bash -c "cat <<EOF > /etc/systemd/system/frontend.service
 [Unit]
 Description=Streamlit Frontend Service

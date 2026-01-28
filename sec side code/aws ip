@@ -1,0 +1,11 @@
+private ip's
+10.0.1.105 management
+10.0.2.150 backend
+10.0.3.179 database
+10.0.1.191 frontend
+
+public ip's
+3.230.51.85 frontend
+52.5.122.5 backend
+52.44.33.136 database
+34.229.91.106 management

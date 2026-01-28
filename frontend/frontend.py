@@ -6,7 +6,7 @@ import pandas as pd
 API_URL = "http://10.0.2.150:5000/students"
 st.set_page_config(page_title="EduStream Pro", layout="wide")
 
-# Custom CSS for modern look
+# CSS
 st.markdown("""
     <style>
     .main { background-color: #f5f7f9; }
@@ -17,7 +17,7 @@ st.markdown("""
 
 st.title("🎓 EduStream Pro | Student Management")
 
-# Sidebar for Navigation
+# Sidebar
 menu = st.sidebar.selectbox("Navigation", ["Dashboard", "Enroll Student", "Manage Database"])
 
 if menu == "Dashboard":
@@ -26,11 +26,8 @@ if menu == "Dashboard":
     if response.status_code == 200:
         data = response.json()
         df = pd.DataFrame(data)
-        
-        # Modern Metrics
         col1, col2, col3 = st.columns(3)
         col1.metric("Total Students", len(df))
-        # Safely handle GPA calculation if empty or missing
         avg_gpa = round(df['gpa'].astype(float).mean(), 2) if not df.empty and 'gpa' in df.columns else 0
         col2.metric("Average GPA", avg_gpa)
         col3.metric("Active Enrollments", "94%")
@@ -49,12 +46,9 @@ elif menu == "Enroll Student":
             name = st.text_input("Full Name")
             email = st.text_input("Institutional Email")
         with col2:
-            # Note: Sending 'department' as key to match DB, UI label remains 'Department'
             department = st.selectbox("Department", ["Computer Science", "Data Science", "AI", "Business"])
             gpa = st.slider("Current GPA", 0.0, 4.0, 3.5)
-
         if st.button("Complete Enrollment"):
-            # FIX: Payload key must be 'department' to match DB schema
             payload = {"name": name, "email": email, "department": department, "gpa": gpa}
             res = requests.post(API_URL, json=payload)
             if res.status_code == 201:
@@ -65,8 +59,7 @@ elif menu == "Enroll Student":
                 
 elif menu == "Manage Database":
     st.subheader("🛠️ Administrative Control Panel")
-    
-    # Fetch latest data for selection
+
     response = requests.get(API_URL)
     if response.status_code == 200:
         data = response.json()
@@ -75,26 +68,21 @@ elif menu == "Manage Database":
         if df.empty:
             st.info("The database is currently empty.")
         else:
-            # 1. Search and Select Student
             student_names = df['name'].tolist()
             selected_student_name = st.selectbox("Select a student to modify or remove", student_names)
             
-            # Get the specific student data
             student_row = df[df['name'] == selected_student_name].iloc[0]
             student_id = student_row.get('id')
 
             st.write(f"**Managing Record for:** {selected_student_name} (ID: {student_id})")
             
-            # 2. Update and Delete Tabs
             tab1, tab2 = st.tabs(["Update Info", "Danger Zone"])
             
             with tab1:
                 with st.form("update_form"):
                     new_email = st.text_input("Update Email", value=student_row['email'])
                     
-                    # FIX: Handle potential missing 'department' key safely
                     current_dept = student_row.get('department', 'Computer Science') 
-                    # Ensure current_dept is in the list, otherwise default to index 0
                     dept_options = ["Computer Science", "Data Science", "AI", "Business"]
                     dept_index = dept_options.index(current_dept) if current_dept in dept_options else 0
                     
@@ -103,12 +91,9 @@ elif menu == "Manage Database":
                                             index=dept_index)
                                             
                     new_gpa = st.slider("Update GPA", 0.0, 4.0, float(student_row['gpa']))
-                    
-                    # FIX: Added Submit Button inside the form (Streamlit requirement)
                     submitted = st.form_submit_button("Save Changes")
                     
                     if submitted:
-                        # FIX: Payload key must be 'department'
                         update_payload = {"name": selected_student_name, "email": new_email, "department": new_department, "gpa": new_gpa}
                         update_res = requests.put(f"{API_URL}/{student_id}", json=update_payload)
                         if update_res.status_code in [200, 204]:

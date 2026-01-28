@@ -3,16 +3,16 @@
 sudo dnf update -y
 sudo dnf install python3-pip nginx git -y
 
-# 2. Clone Your Repository
+# 2. Cloning the Repository
 cd /home/ec2-user
 git clone https://github.com/MananKansagra/3-tier-app.git
 cd 3-tier-app/frontend
 
-# 3. Install Requirements & Fix Version Conflict
+# 3. Installing Requirements & Fix Version Conflict
 pip install -r requirements.txt
 pip install --user python-dateutil==2.9.0
 
-# 4. Configure Streamlit Environment
+# 4. Configuring Streamlit Environment
 mkdir -p ~/.streamlit
 cat <<EOF > ~/.streamlit/config.toml
 [server]
@@ -37,11 +37,11 @@ server {
 }
 EOF'
 
-# Remove Nginx default server conflict and allow network connections
+# Removeing Nginx default server conflict and allow network connections
 sudo sed -i 's/listen       80 default_server;/#listen       80 default_server;/' /etc/nginx/nginx.conf
 sudo setsebool -P httpd_can_network_connect 1
 
-# 6. Create Frontend Persistence Service
+# 6. Creating Frontend Persistence Service
 sudo bash -c "cat <<EOF > /etc/systemd/system/frontend.service
 [Unit]
 Description=Streamlit Frontend

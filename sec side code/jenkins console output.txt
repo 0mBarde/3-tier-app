@@ -1,0 +1,1521 @@
+Started by user admin
+Obtained Jenkinsfile from git https://github.com/0mBarde/3-tier-app.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/DevSecOps-Pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/0mBarde/3-tier-app.git
+ > git init /var/lib/jenkins/workspace/DevSecOps-Pipeline # timeout=10
+Fetching upstream changes from https://github.com/0mBarde/3-tier-app.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/0mBarde/3-tier-app.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/0mBarde/3-tier-app.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision a8ed5396b7488c2a38fe7b24656ddb38cf0b500d (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f a8ed5396b7488c2a38fe7b24656ddb38cf0b500d # timeout=10
+Commit message: "changed the app infra instances to large model"
+First time build. Skipping changelog.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/DevSecOps-Pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/0mBarde/3-tier-app.git # timeout=10
+Fetching upstream changes from https://github.com/0mBarde/3-tier-app.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/0mBarde/3-tier-app.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision a8ed5396b7488c2a38fe7b24656ddb38cf0b500d (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f a8ed5396b7488c2a38fe7b24656ddb38cf0b500d # timeout=10
+Commit message: "changed the app infra instances to large model"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Security: Infra (Checkov))
+[Pipeline] dir
+Running in /var/lib/jenkins/workspace/DevSecOps-Pipeline/infra
+[Pipeline] {
+[Pipeline] sh
++ checkov -d . --soft-fail
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.499 
+
+terraform scan results:
+
+Passed checks: 28, Failed checks: 19, Skipped checks: 0
+
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.web_sg
+	File: /app_infra.tf:53-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.web_sg
+	File: /app_infra.tf:53-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.web_sg
+	File: /app_infra.tf:53-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.app_sg
+	File: /app_infra.tf:77-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.app_sg
+	File: /app_infra.tf:77-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	PASSED for resource: aws_security_group.app_sg
+	File: /app_infra.tf:77-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.app_sg
+	File: /app_infra.tf:77-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.db_sg
+	File: /app_infra.tf:101-123
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.db_sg
+	File: /app_infra.tf:101-123
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	PASSED for resource: aws_security_group.db_sg
+	File: /app_infra.tf:101-123
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.db_sg
+	File: /app_infra.tf:101-123
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	PASSED for resource: aws_instance.web
+	File: /app_infra.tf:126-146
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.web
+	File: /app_infra.tf:126-146
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	PASSED for resource: aws_instance.web
+	File: /app_infra.tf:126-146
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	PASSED for resource: aws_instance.app
+	File: /app_infra.tf:148-168
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.app
+	File: /app_infra.tf:148-168
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	PASSED for resource: aws_instance.app
+	File: /app_infra.tf:148-168
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	PASSED for resource: aws_instance.db
+	File: /app_infra.tf:170-190
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.db
+	File: /app_infra.tf:170-190
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	PASSED for resource: aws_instance.db
+	File: /app_infra.tf:170-190
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+Check: CKV_AWS_386: "Reduce potential for WhoAMI cloud image name confusion attack"
+	PASSED for resource: aws_ami.amazon_linux
+	File: /app_infra.tf:43-50
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-supply-chain-policies/bc-aws-386
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /app_infra.tf:7-9
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.web_sg
+	File: /app_infra.tf:53-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.app_sg
+	File: /app_infra.tf:77-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.db_sg
+	File: /app_infra.tf:101-123
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV2_AWS_19: "Ensure that all EIP addresses allocated to a VPC are attached to EC2 instances"
+	PASSED for resource: aws_eip.web_eip
+	File: /app_infra.tf:193-196
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-all-eip-addresses-allocated-to-a-vpc-are-attached-to-ec2-instances
+Check: CKV2_AWS_19: "Ensure that all EIP addresses allocated to a VPC are attached to EC2 instances"
+	PASSED for resource: aws_eip.app_eip
+	File: /app_infra.tf:198-201
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-all-eip-addresses-allocated-to-a-vpc-are-attached-to-ec2-instances
+Check: CKV2_AWS_19: "Ensure that all EIP addresses allocated to a VPC are attached to EC2 instances"
+	PASSED for resource: aws_eip.db_eip
+	File: /app_infra.tf:203-206
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-all-eip-addresses-allocated-to-a-vpc-are-attached-to-ec2-instances
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.web_sg
+	File: /app_infra.tf:53-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		53 | resource "aws_security_group" "web_sg" {
+		54 |   name   = "web-tier-sg"
+		55 |   vpc_id = data.aws_vpc.selected.id
+		56 | 
+		57 |   ingress {
+		58 |     from_port   = 80
+		59 |     to_port     = 80
+		60 |     protocol    = "tcp"
+		61 |     cidr_blocks = ["0.0.0.0/0"]
+		62 |   }
+		63 |   ingress {
+		64 |     from_port   = 22
+		65 |     to_port     = 22
+		66 |     protocol    = "tcp"
+		67 |     cidr_blocks = ["10.0.0.0/16"]
+		68 |   }
+		69 |   egress {
+		70 |     from_port   = 0
+		71 |     to_port     = 0
+		72 |     protocol    = "-1"
+		73 |     cidr_blocks = ["0.0.0.0/0"]
+		74 |   }
+		75 | }
+
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	FAILED for resource: aws_security_group.web_sg
+	File: /app_infra.tf:53-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+
+		53 | resource "aws_security_group" "web_sg" {
+		54 |   name   = "web-tier-sg"
+		55 |   vpc_id = data.aws_vpc.selected.id
+		56 | 
+		57 |   ingress {
+		58 |     from_port   = 80
+		59 |     to_port     = 80
+		60 |     protocol    = "tcp"
+		61 |     cidr_blocks = ["0.0.0.0/0"]
+		62 |   }
+		63 |   ingress {
+		64 |     from_port   = 22
+		65 |     to_port     = 22
+		66 |     protocol    = "tcp"
+		67 |     cidr_blocks = ["10.0.0.0/16"]
+		68 |   }
+		69 |   egress {
+		70 |     from_port   = 0
+		71 |     to_port     = 0
+		72 |     protocol    = "-1"
+		73 |     cidr_blocks = ["0.0.0.0/0"]
+		74 |   }
+		75 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.web_sg
+	File: /app_infra.tf:53-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		53 | resource "aws_security_group" "web_sg" {
+		54 |   name   = "web-tier-sg"
+		55 |   vpc_id = data.aws_vpc.selected.id
+		56 | 
+		57 |   ingress {
+		58 |     from_port   = 80
+		59 |     to_port     = 80
+		60 |     protocol    = "tcp"
+		61 |     cidr_blocks = ["0.0.0.0/0"]
+		62 |   }
+		63 |   ingress {
+		64 |     from_port   = 22
+		65 |     to_port     = 22
+		66 |     protocol    = "tcp"
+		67 |     cidr_blocks = ["10.0.0.0/16"]
+		68 |   }
+		69 |   egress {
+		70 |     from_port   = 0
+		71 |     to_port     = 0
+		72 |     protocol    = "-1"
+		73 |     cidr_blocks = ["0.0.0.0/0"]
+		74 |   }
+		75 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.app_sg
+	File: /app_infra.tf:77-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		77 | resource "aws_security_group" "app_sg" {
+		78 |   name   = "app-tier-sg"
+		79 |   vpc_id = data.aws_vpc.selected.id
+		80 | 
+		81 |   ingress {
+		82 |     from_port       = 5000
+		83 |     to_port         = 5000
+		84 |     protocol        = "tcp"
+		85 |     security_groups = [aws_security_group.web_sg.id]
+		86 |   }
+		87 |   ingress {
+		88 |     from_port   = 22
+		89 |     to_port     = 22
+		90 |     protocol    = "tcp"
+		91 |     cidr_blocks = ["10.0.0.0/16"]
+		92 |   }
+		93 |   egress {
+		94 |     from_port   = 0
+		95 |     to_port     = 0
+		96 |     protocol    = "-1"
+		97 |     cidr_blocks = ["0.0.0.0/0"]
+		98 |   }
+		99 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.app_sg
+	File: /app_infra.tf:77-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		77 | resource "aws_security_group" "app_sg" {
+		78 |   name   = "app-tier-sg"
+		79 |   vpc_id = data.aws_vpc.selected.id
+		80 | 
+		81 |   ingress {
+		82 |     from_port       = 5000
+		83 |     to_port         = 5000
+		84 |     protocol        = "tcp"
+		85 |     security_groups = [aws_security_group.web_sg.id]
+		86 |   }
+		87 |   ingress {
+		88 |     from_port   = 22
+		89 |     to_port     = 22
+		90 |     protocol    = "tcp"
+		91 |     cidr_blocks = ["10.0.0.0/16"]
+		92 |   }
+		93 |   egress {
+		94 |     from_port   = 0
+		95 |     to_port     = 0
+		96 |     protocol    = "-1"
+		97 |     cidr_blocks = ["0.0.0.0/0"]
+		98 |   }
+		99 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.db_sg
+	File: /app_infra.tf:101-123
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		101 | resource "aws_security_group" "db_sg" {
+		102 |   name   = "db-tier-sg"
+		103 |   vpc_id = data.aws_vpc.selected.id
+		104 | 
+		105 |   ingress {
+		106 |     from_port       = 3306
+		107 |     to_port         = 3306
+		108 |     protocol        = "tcp"
+		109 |     security_groups = [aws_security_group.app_sg.id]
+		110 |   }
+		111 |   ingress {
+		112 |     from_port   = 22
+		113 |     to_port     = 22
+		114 |     protocol    = "tcp"
+		115 |     cidr_blocks = ["10.0.0.0/16"]
+		116 |   }
+		117 |   egress {
+		118 |     from_port   = 0
+		119 |     to_port     = 0
+		120 |     protocol    = "-1"
+		121 |     cidr_blocks = ["0.0.0.0/0"]
+		122 |   }
+		123 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.db_sg
+	File: /app_infra.tf:101-123
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		101 | resource "aws_security_group" "db_sg" {
+		102 |   name   = "db-tier-sg"
+		103 |   vpc_id = data.aws_vpc.selected.id
+		104 | 
+		105 |   ingress {
+		106 |     from_port       = 3306
+		107 |     to_port         = 3306
+		108 |     protocol        = "tcp"
+		109 |     security_groups = [aws_security_group.app_sg.id]
+		110 |   }
+		111 |   ingress {
+		112 |     from_port   = 22
+		113 |     to_port     = 22
+		114 |     protocol    = "tcp"
+		115 |     cidr_blocks = ["10.0.0.0/16"]
+		116 |   }
+		117 |   egress {
+		118 |     from_port   = 0
+		119 |     to_port     = 0
+		120 |     protocol    = "-1"
+		121 |     cidr_blocks = ["0.0.0.0/0"]
+		122 |   }
+		123 | }
+
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.web
+	File: /app_infra.tf:126-146
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		126 | resource "aws_instance" "web" {
+		127 |   ami                    = data.aws_ami.amazon_linux.id
+		128 |   instance_type          = "m7i-flex.large"
+		129 |   subnet_id              = data.aws_subnet.web.id
+		130 |   vpc_security_group_ids = [aws_security_group.web_sg.id]
+		131 |   key_name               = "three-tier-key"
+		132 |   private_ip             = "10.0.1.191"
+		133 |   user_data              = file("${path.module}/setup_web.sh")
+		134 |   
+		135 |   root_block_device {
+		136 | 
+		137 |     volume_size = 10
+		138 | 
+		139 |     volume_type = "gp3"
+		140 | 
+		141 |     encrypted   = true
+		142 | 
+		143 |   }
+		144 | 
+		145 |   tags                   = { Name = "Web-Server" }
+		146 | }
+
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.web
+	File: /app_infra.tf:126-146
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		126 | resource "aws_instance" "web" {
+		127 |   ami                    = data.aws_ami.amazon_linux.id
+		128 |   instance_type          = "m7i-flex.large"
+		129 |   subnet_id              = data.aws_subnet.web.id
+		130 |   vpc_security_group_ids = [aws_security_group.web_sg.id]
+		131 |   key_name               = "three-tier-key"
+		132 |   private_ip             = "10.0.1.191"
+		133 |   user_data              = file("${path.module}/setup_web.sh")
+		134 |   
+		135 |   root_block_device {
+		136 | 
+		137 |     volume_size = 10
+		138 | 
+		139 |     volume_type = "gp3"
+		140 | 
+		141 |     encrypted   = true
+		142 | 
+		143 |   }
+		144 | 
+		145 |   tags                   = { Name = "Web-Server" }
+		146 | }
+
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.web
+	File: /app_infra.tf:126-146
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		126 | resource "aws_instance" "web" {
+		127 |   ami                    = data.aws_ami.amazon_linux.id
+		128 |   instance_type          = "m7i-flex.large"
+		129 |   subnet_id              = data.aws_subnet.web.id
+		130 |   vpc_security_group_ids = [aws_security_group.web_sg.id]
+		131 |   key_name               = "three-tier-key"
+		132 |   private_ip             = "10.0.1.191"
+		133 |   user_data              = file("${path.module}/setup_web.sh")
+		134 |   
+		135 |   root_block_device {
+		136 | 
+		137 |     volume_size = 10
+		138 | 
+		139 |     volume_type = "gp3"
+		140 | 
+		141 |     encrypted   = true
+		142 | 
+		143 |   }
+		144 | 
+		145 |   tags                   = { Name = "Web-Server" }
+		146 | }
+
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.app
+	File: /app_infra.tf:148-168
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		148 | resource "aws_instance" "app" {
+		149 |   ami                    = data.aws_ami.amazon_linux.id
+		150 |   instance_type          = "m7i-flex.large"
+		151 |   subnet_id              = data.aws_subnet.app.id
+		152 |   vpc_security_group_ids = [aws_security_group.app_sg.id]
+		153 |   key_name               = "three-tier-key"
+		154 |   private_ip             = "10.0.2.150"
+		155 |   user_data              = file("${path.module}/setup_app.sh")
+		156 | 
+		157 |   root_block_device {
+		158 | 
+		159 |     volume_size = 10
+		160 | 
+		161 |     volume_type = "gp3"
+		162 | 
+		163 |     encrypted   = true
+		164 | 
+		165 |   }
+		166 | 
+		167 |   tags                   = { Name = "App-Server" }
+		168 | }
+
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.app
+	File: /app_infra.tf:148-168
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		148 | resource "aws_instance" "app" {
+		149 |   ami                    = data.aws_ami.amazon_linux.id
+		150 |   instance_type          = "m7i-flex.large"
+		151 |   subnet_id              = data.aws_subnet.app.id
+		152 |   vpc_security_group_ids = [aws_security_group.app_sg.id]
+		153 |   key_name               = "three-tier-key"
+		154 |   private_ip             = "10.0.2.150"
+		155 |   user_data              = file("${path.module}/setup_app.sh")
+		156 | 
+		157 |   root_block_device {
+		158 | 
+		159 |     volume_size = 10
+		160 | 
+		161 |     volume_type = "gp3"
+		162 | 
+		163 |     encrypted   = true
+		164 | 
+		165 |   }
+		166 | 
+		167 |   tags                   = { Name = "App-Server" }
+		168 | }
+
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.app
+	File: /app_infra.tf:148-168
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		148 | resource "aws_instance" "app" {
+		149 |   ami                    = data.aws_ami.amazon_linux.id
+		150 |   instance_type          = "m7i-flex.large"
+		151 |   subnet_id              = data.aws_subnet.app.id
+		152 |   vpc_security_group_ids = [aws_security_group.app_sg.id]
+		153 |   key_name               = "three-tier-key"
+		154 |   private_ip             = "10.0.2.150"
+		155 |   user_data              = file("${path.module}/setup_app.sh")
+		156 | 
+		157 |   root_block_device {
+		158 | 
+		159 |     volume_size = 10
+		160 | 
+		161 |     volume_type = "gp3"
+		162 | 
+		163 |     encrypted   = true
+		164 | 
+		165 |   }
+		166 | 
+		167 |   tags                   = { Name = "App-Server" }
+		168 | }
+
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.db
+	File: /app_infra.tf:170-190
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		170 | resource "aws_instance" "db" {
+		171 |   ami                    = data.aws_ami.amazon_linux.id
+		172 |   instance_type          = "m7i-flex.large"
+		173 |   subnet_id              = data.aws_subnet.db.id
+		174 |   vpc_security_group_ids = [aws_security_group.db_sg.id]
+		175 |   key_name               = "three-tier-key"
+		176 |   private_ip             = "10.0.3.179"
+		177 |   user_data              = file("${path.module}/setup_db.sh")
+		178 |   
+		179 |   root_block_device {
+		180 | 
+		181 |     volume_size = 10
+		182 | 
+		183 |     volume_type = "gp3"
+		184 | 
+		185 |     encrypted   = true
+		186 | 
+		187 |   }
+		188 | 
+		189 |   tags                   = { Name = "DB-Server" }
+		190 | }
+
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.db
+	File: /app_infra.tf:170-190
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		170 | resource "aws_instance" "db" {
+		171 |   ami                    = data.aws_ami.amazon_linux.id
+		172 |   instance_type          = "m7i-flex.large"
+		173 |   subnet_id              = data.aws_subnet.db.id
+		174 |   vpc_security_group_ids = [aws_security_group.db_sg.id]
+		175 |   key_name               = "three-tier-key"
+		176 |   private_ip             = "10.0.3.179"
+		177 |   user_data              = file("${path.module}/setup_db.sh")
+		178 |   
+		179 |   root_block_device {
+		180 | 
+		181 |     volume_size = 10
+		182 | 
+		183 |     volume_type = "gp3"
+		184 | 
+		185 |     encrypted   = true
+		186 | 
+		187 |   }
+		188 | 
+		189 |   tags                   = { Name = "DB-Server" }
+		190 | }
+
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.db
+	File: /app_infra.tf:170-190
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		170 | resource "aws_instance" "db" {
+		171 |   ami                    = data.aws_ami.amazon_linux.id
+		172 |   instance_type          = "m7i-flex.large"
+		173 |   subnet_id              = data.aws_subnet.db.id
+		174 |   vpc_security_group_ids = [aws_security_group.db_sg.id]
+		175 |   key_name               = "three-tier-key"
+		176 |   private_ip             = "10.0.3.179"
+		177 |   user_data              = file("${path.module}/setup_db.sh")
+		178 |   
+		179 |   root_block_device {
+		180 | 
+		181 |     volume_size = 10
+		182 | 
+		183 |     volume_type = "gp3"
+		184 | 
+		185 |     encrypted   = true
+		186 | 
+		187 |   }
+		188 | 
+		189 |   tags                   = { Name = "DB-Server" }
+		190 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.web
+	File: /app_infra.tf:126-146
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		126 | resource "aws_instance" "web" {
+		127 |   ami                    = data.aws_ami.amazon_linux.id
+		128 |   instance_type          = "m7i-flex.large"
+		129 |   subnet_id              = data.aws_subnet.web.id
+		130 |   vpc_security_group_ids = [aws_security_group.web_sg.id]
+		131 |   key_name               = "three-tier-key"
+		132 |   private_ip             = "10.0.1.191"
+		133 |   user_data              = file("${path.module}/setup_web.sh")
+		134 |   
+		135 |   root_block_device {
+		136 | 
+		137 |     volume_size = 10
+		138 | 
+		139 |     volume_type = "gp3"
+		140 | 
+		141 |     encrypted   = true
+		142 | 
+		143 |   }
+		144 | 
+		145 |   tags                   = { Name = "Web-Server" }
+		146 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.app
+	File: /app_infra.tf:148-168
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		148 | resource "aws_instance" "app" {
+		149 |   ami                    = data.aws_ami.amazon_linux.id
+		150 |   instance_type          = "m7i-flex.large"
+		151 |   subnet_id              = data.aws_subnet.app.id
+		152 |   vpc_security_group_ids = [aws_security_group.app_sg.id]
+		153 |   key_name               = "three-tier-key"
+		154 |   private_ip             = "10.0.2.150"
+		155 |   user_data              = file("${path.module}/setup_app.sh")
+		156 | 
+		157 |   root_block_device {
+		158 | 
+		159 |     volume_size = 10
+		160 | 
+		161 |     volume_type = "gp3"
+		162 | 
+		163 |     encrypted   = true
+		164 | 
+		165 |   }
+		166 | 
+		167 |   tags                   = { Name = "App-Server" }
+		168 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.db
+	File: /app_infra.tf:170-190
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		170 | resource "aws_instance" "db" {
+		171 |   ami                    = data.aws_ami.amazon_linux.id
+		172 |   instance_type          = "m7i-flex.large"
+		173 |   subnet_id              = data.aws_subnet.db.id
+		174 |   vpc_security_group_ids = [aws_security_group.db_sg.id]
+		175 |   key_name               = "three-tier-key"
+		176 |   private_ip             = "10.0.3.179"
+		177 |   user_data              = file("${path.module}/setup_db.sh")
+		178 |   
+		179 |   root_block_device {
+		180 | 
+		181 |     volume_size = 10
+		182 | 
+		183 |     volume_type = "gp3"
+		184 | 
+		185 |     encrypted   = true
+		186 | 
+		187 |   }
+		188 | 
+		189 |   tags                   = { Name = "DB-Server" }
+		190 | }
+
+
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Provision: App Infrastructure)
+[Pipeline] dir
+Running in /var/lib/jenkins/workspace/DevSecOps-Pipeline/infra
+[Pipeline] {
+[Pipeline] sh
++ terraform init
+[0m[1mInitializing the backend...[0m
+[0m[1mInitializing provider plugins...[0m
+- Finding hashicorp/aws versions matching "~> 5.0"...
+- Installing hashicorp/aws v5.100.0...
+- Installed hashicorp/aws v5.100.0 (signed by HashiCorp)
+Terraform has created a lock file [1m.terraform.lock.hcl[0m to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.[0m
+
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[0m[32m
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.[0m
+[Pipeline] sh
++ terraform apply -auto-approve
+[0m[1mdata.aws_vpc.selected: Reading...[0m[0m
+[0m[1mdata.aws_ami.amazon_linux: Reading...[0m[0m
+[0m[1mdata.aws_vpc.selected: Read complete after 0s [id=vpc-08b2a79bfb666d646][0m
+[0m[1mdata.aws_subnet.db: Reading...[0m[0m
+[0m[1mdata.aws_subnet.app: Reading...[0m[0m
+[0m[1mdata.aws_subnet.web: Reading...[0m[0m
+[0m[1mdata.aws_subnet.app: Read complete after 0s [id=subnet-039703a595ef43499][0m
+[0m[1mdata.aws_subnet.web: Read complete after 0s [id=subnet-0b455a5ca7ed2f672][0m
+[0m[1mdata.aws_ami.amazon_linux: Read complete after 0s [id=ami-0e3008cbd8722baf0][0m
+[0m[1mdata.aws_subnet.db: Read complete after 0s [id=subnet-089a5bb5651133eb9][0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [32m+[0m create[0m
+
+Terraform will perform the following actions:
+
+[1m  # aws_eip.app_eip[0m will be created
+[0m  [32m+[0m[0m resource "aws_eip" "app_eip" {
+      [32m+[0m[0m allocation_id        = (known after apply)
+      [32m+[0m[0m arn                  = (known after apply)
+      [32m+[0m[0m association_id       = (known after apply)
+      [32m+[0m[0m carrier_ip           = (known after apply)
+      [32m+[0m[0m customer_owned_ip    = (known after apply)
+      [32m+[0m[0m domain               = "vpc"
+      [32m+[0m[0m id                   = (known after apply)
+      [32m+[0m[0m instance             = (known after apply)
+      [32m+[0m[0m ipam_pool_id         = (known after apply)
+      [32m+[0m[0m network_border_group = (known after apply)
+      [32m+[0m[0m network_interface    = (known after apply)
+      [32m+[0m[0m private_dns          = (known after apply)
+      [32m+[0m[0m private_ip           = (known after apply)
+      [32m+[0m[0m ptr_record           = (known after apply)
+      [32m+[0m[0m public_dns           = (known after apply)
+      [32m+[0m[0m public_ip            = (known after apply)
+      [32m+[0m[0m public_ipv4_pool     = (known after apply)
+      [32m+[0m[0m tags_all             = (known after apply)
+      [32m+[0m[0m vpc                  = (known after apply)
+    }
+
+[1m  # aws_eip.db_eip[0m will be created
+[0m  [32m+[0m[0m resource "aws_eip" "db_eip" {
+      [32m+[0m[0m allocation_id        = (known after apply)
+      [32m+[0m[0m arn                  = (known after apply)
+      [32m+[0m[0m association_id       = (known after apply)
+      [32m+[0m[0m carrier_ip           = (known after apply)
+      [32m+[0m[0m customer_owned_ip    = (known after apply)
+      [32m+[0m[0m domain               = "vpc"
+      [32m+[0m[0m id                   = (known after apply)
+      [32m+[0m[0m instance             = (known after apply)
+      [32m+[0m[0m ipam_pool_id         = (known after apply)
+      [32m+[0m[0m network_border_group = (known after apply)
+      [32m+[0m[0m network_interface    = (known after apply)
+      [32m+[0m[0m private_dns          = (known after apply)
+      [32m+[0m[0m private_ip           = (known after apply)
+      [32m+[0m[0m ptr_record           = (known after apply)
+      [32m+[0m[0m public_dns           = (known after apply)
+      [32m+[0m[0m public_ip            = (known after apply)
+      [32m+[0m[0m public_ipv4_pool     = (known after apply)
+      [32m+[0m[0m tags_all             = (known after apply)
+      [32m+[0m[0m vpc                  = (known after apply)
+    }
+
+[1m  # aws_eip.web_eip[0m will be created
+[0m  [32m+[0m[0m resource "aws_eip" "web_eip" {
+      [32m+[0m[0m allocation_id        = (known after apply)
+      [32m+[0m[0m arn                  = (known after apply)
+      [32m+[0m[0m association_id       = (known after apply)
+      [32m+[0m[0m carrier_ip           = (known after apply)
+      [32m+[0m[0m customer_owned_ip    = (known after apply)
+      [32m+[0m[0m domain               = "vpc"
+      [32m+[0m[0m id                   = (known after apply)
+      [32m+[0m[0m instance             = (known after apply)
+      [32m+[0m[0m ipam_pool_id         = (known after apply)
+      [32m+[0m[0m network_border_group = (known after apply)
+      [32m+[0m[0m network_interface    = (known after apply)
+      [32m+[0m[0m private_dns          = (known after apply)
+      [32m+[0m[0m private_ip           = (known after apply)
+      [32m+[0m[0m ptr_record           = (known after apply)
+      [32m+[0m[0m public_dns           = (known after apply)
+      [32m+[0m[0m public_ip            = (known after apply)
+      [32m+[0m[0m public_ipv4_pool     = (known after apply)
+      [32m+[0m[0m tags_all             = (known after apply)
+      [32m+[0m[0m vpc                  = (known after apply)
+    }
+
+[1m  # aws_instance.app[0m will be created
+[0m  [32m+[0m[0m resource "aws_instance" "app" {
+      [32m+[0m[0m ami                                  = "ami-0e3008cbd8722baf0"
+      [32m+[0m[0m arn                                  = (known after apply)
+      [32m+[0m[0m associate_public_ip_address          = (known after apply)
+      [32m+[0m[0m availability_zone                    = (known after apply)
+      [32m+[0m[0m cpu_core_count                       = (known after apply)
+      [32m+[0m[0m cpu_threads_per_core                 = (known after apply)
+      [32m+[0m[0m disable_api_stop                     = (known after apply)
+      [32m+[0m[0m disable_api_termination              = (known after apply)
+      [32m+[0m[0m ebs_optimized                        = (known after apply)
+      [32m+[0m[0m enable_primary_ipv6                  = (known after apply)
+      [32m+[0m[0m get_password_data                    = false
+      [32m+[0m[0m host_id                              = (known after apply)
+      [32m+[0m[0m host_resource_group_arn              = (known after apply)
+      [32m+[0m[0m iam_instance_profile                 = (known after apply)
+      [32m+[0m[0m id                                   = (known after apply)
+      [32m+[0m[0m instance_initiated_shutdown_behavior = (known after apply)
+      [32m+[0m[0m instance_lifecycle                   = (known after apply)
+      [32m+[0m[0m instance_state                       = (known after apply)
+      [32m+[0m[0m instance_type                        = "m7i-flex.large"
+      [32m+[0m[0m ipv6_address_count                   = (known after apply)
+      [32m+[0m[0m ipv6_addresses                       = (known after apply)
+      [32m+[0m[0m key_name                             = "three-tier-key"
+      [32m+[0m[0m monitoring                           = (known after apply)
+      [32m+[0m[0m outpost_arn                          = (known after apply)
+      [32m+[0m[0m password_data                        = (known after apply)
+      [32m+[0m[0m placement_group                      = (known after apply)
+      [32m+[0m[0m placement_partition_number           = (known after apply)
+      [32m+[0m[0m primary_network_interface_id         = (known after apply)
+      [32m+[0m[0m private_dns                          = (known after apply)
+      [32m+[0m[0m private_ip                           = "10.0.2.150"
+      [32m+[0m[0m public_dns                           = (known after apply)
+      [32m+[0m[0m public_ip                            = (known after apply)
+      [32m+[0m[0m secondary_private_ips                = (known after apply)
+      [32m+[0m[0m security_groups                      = (known after apply)
+      [32m+[0m[0m source_dest_check                    = true
+      [32m+[0m[0m spot_instance_request_id             = (known after apply)
+      [32m+[0m[0m subnet_id                            = "subnet-039703a595ef43499"
+      [32m+[0m[0m tags                                 = {
+          [32m+[0m[0m "Name" = "App-Server"
+        }
+      [32m+[0m[0m tags_all                             = {
+          [32m+[0m[0m "Name" = "App-Server"
+        }
+      [32m+[0m[0m tenancy                              = (known after apply)
+      [32m+[0m[0m user_data                            = "0d2171d42fad30411cf6e3d7a008d2836a74ea2f"
+      [32m+[0m[0m user_data_base64                     = (known after apply)
+      [32m+[0m[0m user_data_replace_on_change          = false
+      [32m+[0m[0m vpc_security_group_ids               = (known after apply)
+
+      [32m+[0m[0m capacity_reservation_specification (known after apply)
+
+      [32m+[0m[0m cpu_options (known after apply)
+
+      [32m+[0m[0m ebs_block_device (known after apply)
+
+      [32m+[0m[0m enclave_options (known after apply)
+
+      [32m+[0m[0m ephemeral_block_device (known after apply)
+
+      [32m+[0m[0m instance_market_options (known after apply)
+
+      [32m+[0m[0m maintenance_options (known after apply)
+
+      [32m+[0m[0m metadata_options (known after apply)
+
+      [32m+[0m[0m network_interface (known after apply)
+
+      [32m+[0m[0m private_dns_name_options (known after apply)
+
+      [32m+[0m[0m root_block_device {
+          [32m+[0m[0m delete_on_termination = true
+          [32m+[0m[0m device_name           = (known after apply)
+          [32m+[0m[0m encrypted             = true
+          [32m+[0m[0m iops                  = (known after apply)
+          [32m+[0m[0m kms_key_id            = (known after apply)
+          [32m+[0m[0m tags_all              = (known after apply)
+          [32m+[0m[0m throughput            = (known after apply)
+          [32m+[0m[0m volume_id             = (known after apply)
+          [32m+[0m[0m volume_size           = 10
+          [32m+[0m[0m volume_type           = "gp3"
+        }
+    }
+
+[1m  # aws_instance.db[0m will be created
+[0m  [32m+[0m[0m resource "aws_instance" "db" {
+      [32m+[0m[0m ami                                  = "ami-0e3008cbd8722baf0"
+      [32m+[0m[0m arn                                  = (known after apply)
+      [32m+[0m[0m associate_public_ip_address          = (known after apply)
+      [32m+[0m[0m availability_zone                    = (known after apply)
+      [32m+[0m[0m cpu_core_count                       = (known after apply)
+      [32m+[0m[0m cpu_threads_per_core                 = (known after apply)
+      [32m+[0m[0m disable_api_stop                     = (known after apply)
+      [32m+[0m[0m disable_api_termination              = (known after apply)
+      [32m+[0m[0m ebs_optimized                        = (known after apply)
+      [32m+[0m[0m enable_primary_ipv6                  = (known after apply)
+      [32m+[0m[0m get_password_data                    = false
+      [32m+[0m[0m host_id                              = (known after apply)
+      [32m+[0m[0m host_resource_group_arn              = (known after apply)
+      [32m+[0m[0m iam_instance_profile                 = (known after apply)
+      [32m+[0m[0m id                                   = (known after apply)
+      [32m+[0m[0m instance_initiated_shutdown_behavior = (known after apply)
+      [32m+[0m[0m instance_lifecycle                   = (known after apply)
+      [32m+[0m[0m instance_state                       = (known after apply)
+      [32m+[0m[0m instance_type                        = "m7i-flex.large"
+      [32m+[0m[0m ipv6_address_count                   = (known after apply)
+      [32m+[0m[0m ipv6_addresses                       = (known after apply)
+      [32m+[0m[0m key_name                             = "three-tier-key"
+      [32m+[0m[0m monitoring                           = (known after apply)
+      [32m+[0m[0m outpost_arn                          = (known after apply)
+      [32m+[0m[0m password_data                        = (known after apply)
+      [32m+[0m[0m placement_group                      = (known after apply)
+      [32m+[0m[0m placement_partition_number           = (known after apply)
+      [32m+[0m[0m primary_network_interface_id         = (known after apply)
+      [32m+[0m[0m private_dns                          = (known after apply)
+      [32m+[0m[0m private_ip                           = "10.0.3.179"
+      [32m+[0m[0m public_dns                           = (known after apply)
+      [32m+[0m[0m public_ip                            = (known after apply)
+      [32m+[0m[0m secondary_private_ips                = (known after apply)
+      [32m+[0m[0m security_groups                      = (known after apply)
+      [32m+[0m[0m source_dest_check                    = true
+      [32m+[0m[0m spot_instance_request_id             = (known after apply)
+      [32m+[0m[0m subnet_id                            = "subnet-089a5bb5651133eb9"
+      [32m+[0m[0m tags                                 = {
+          [32m+[0m[0m "Name" = "DB-Server"
+        }
+      [32m+[0m[0m tags_all                             = {
+          [32m+[0m[0m "Name" = "DB-Server"
+        }
+      [32m+[0m[0m tenancy                              = (known after apply)
+      [32m+[0m[0m user_data                            = "384087fde797b00a176a125903b7af92988c8751"
+      [32m+[0m[0m user_data_base64                     = (known after apply)
+      [32m+[0m[0m user_data_replace_on_change          = false
+      [32m+[0m[0m vpc_security_group_ids               = (known after apply)
+
+      [32m+[0m[0m capacity_reservation_specification (known after apply)
+
+      [32m+[0m[0m cpu_options (known after apply)
+
+      [32m+[0m[0m ebs_block_device (known after apply)
+
+      [32m+[0m[0m enclave_options (known after apply)
+
+      [32m+[0m[0m ephemeral_block_device (known after apply)
+
+      [32m+[0m[0m instance_market_options (known after apply)
+
+      [32m+[0m[0m maintenance_options (known after apply)
+
+      [32m+[0m[0m metadata_options (known after apply)
+
+      [32m+[0m[0m network_interface (known after apply)
+
+      [32m+[0m[0m private_dns_name_options (known after apply)
+
+      [32m+[0m[0m root_block_device {
+          [32m+[0m[0m delete_on_termination = true
+          [32m+[0m[0m device_name           = (known after apply)
+          [32m+[0m[0m encrypted             = true
+          [32m+[0m[0m iops                  = (known after apply)
+          [32m+[0m[0m kms_key_id            = (known after apply)
+          [32m+[0m[0m tags_all              = (known after apply)
+          [32m+[0m[0m throughput            = (known after apply)
+          [32m+[0m[0m volume_id             = (known after apply)
+          [32m+[0m[0m volume_size           = 10
+          [32m+[0m[0m volume_type           = "gp3"
+        }
+    }
+
+[1m  # aws_instance.web[0m will be created
+[0m  [32m+[0m[0m resource "aws_instance" "web" {
+      [32m+[0m[0m ami                                  = "ami-0e3008cbd8722baf0"
+      [32m+[0m[0m arn                                  = (known after apply)
+      [32m+[0m[0m associate_public_ip_address          = (known after apply)
+      [32m+[0m[0m availability_zone                    = (known after apply)
+      [32m+[0m[0m cpu_core_count                       = (known after apply)
+      [32m+[0m[0m cpu_threads_per_core                 = (known after apply)
+      [32m+[0m[0m disable_api_stop                     = (known after apply)
+      [32m+[0m[0m disable_api_termination              = (known after apply)
+      [32m+[0m[0m ebs_optimized                        = (known after apply)
+      [32m+[0m[0m enable_primary_ipv6                  = (known after apply)
+      [32m+[0m[0m get_password_data                    = false
+      [32m+[0m[0m host_id                              = (known after apply)
+      [32m+[0m[0m host_resource_group_arn              = (known after apply)
+      [32m+[0m[0m iam_instance_profile                 = (known after apply)
+      [32m+[0m[0m id                                   = (known after apply)
+      [32m+[0m[0m instance_initiated_shutdown_behavior = (known after apply)
+      [32m+[0m[0m instance_lifecycle                   = (known after apply)
+      [32m+[0m[0m instance_state                       = (known after apply)
+      [32m+[0m[0m instance_type                        = "m7i-flex.large"
+      [32m+[0m[0m ipv6_address_count                   = (known after apply)
+      [32m+[0m[0m ipv6_addresses                       = (known after apply)
+      [32m+[0m[0m key_name                             = "three-tier-key"
+      [32m+[0m[0m monitoring                           = (known after apply)
+      [32m+[0m[0m outpost_arn                          = (known after apply)
+      [32m+[0m[0m password_data                        = (known after apply)
+      [32m+[0m[0m placement_group                      = (known after apply)
+      [32m+[0m[0m placement_partition_number           = (known after apply)
+      [32m+[0m[0m primary_network_interface_id         = (known after apply)
+      [32m+[0m[0m private_dns                          = (known after apply)
+      [32m+[0m[0m private_ip                           = "10.0.1.191"
+      [32m+[0m[0m public_dns                           = (known after apply)
+      [32m+[0m[0m public_ip                            = (known after apply)
+      [32m+[0m[0m secondary_private_ips                = (known after apply)
+      [32m+[0m[0m security_groups                      = (known after apply)
+      [32m+[0m[0m source_dest_check                    = true
+      [32m+[0m[0m spot_instance_request_id             = (known after apply)
+      [32m+[0m[0m subnet_id                            = "subnet-0b455a5ca7ed2f672"
+      [32m+[0m[0m tags                                 = {
+          [32m+[0m[0m "Name" = "Web-Server"
+        }
+      [32m+[0m[0m tags_all                             = {
+          [32m+[0m[0m "Name" = "Web-Server"
+        }
+      [32m+[0m[0m tenancy                              = (known after apply)
+      [32m+[0m[0m user_data                            = "fb295886a3e7c1b9c05040d0b698174fd4003d14"
+      [32m+[0m[0m user_data_base64                     = (known after apply)
+      [32m+[0m[0m user_data_replace_on_change          = false
+      [32m+[0m[0m vpc_security_group_ids               = (known after apply)
+
+      [32m+[0m[0m capacity_reservation_specification (known after apply)
+
+      [32m+[0m[0m cpu_options (known after apply)
+
+      [32m+[0m[0m ebs_block_device (known after apply)
+
+      [32m+[0m[0m enclave_options (known after apply)
+
+      [32m+[0m[0m ephemeral_block_device (known after apply)
+
+      [32m+[0m[0m instance_market_options (known after apply)
+
+      [32m+[0m[0m maintenance_options (known after apply)
+
+      [32m+[0m[0m metadata_options (known after apply)
+
+      [32m+[0m[0m network_interface (known after apply)
+
+      [32m+[0m[0m private_dns_name_options (known after apply)
+
+      [32m+[0m[0m root_block_device {
+          [32m+[0m[0m delete_on_termination = true
+          [32m+[0m[0m device_name           = (known after apply)
+          [32m+[0m[0m encrypted             = true
+          [32m+[0m[0m iops                  = (known after apply)
+          [32m+[0m[0m kms_key_id            = (known after apply)
+          [32m+[0m[0m tags_all              = (known after apply)
+          [32m+[0m[0m throughput            = (known after apply)
+          [32m+[0m[0m volume_id             = (known after apply)
+          [32m+[0m[0m volume_size           = 10
+          [32m+[0m[0m volume_type           = "gp3"
+        }
+    }
+
+[1m  # aws_security_group.app_sg[0m will be created
+[0m  [32m+[0m[0m resource "aws_security_group" "app_sg" {
+      [32m+[0m[0m arn                    = (known after apply)
+      [32m+[0m[0m description            = "Managed by Terraform"
+      [32m+[0m[0m egress                 = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m from_port        = 0
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "-1"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 0
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            },
+        ]
+      [32m+[0m[0m id                     = (known after apply)
+      [32m+[0m[0m ingress                = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "10.0.0.0/16",
+                ]
+              [32m+[0m[0m from_port        = 22
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 22
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = []
+              [32m+[0m[0m from_port        = 5000
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = (known after apply)
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 5000
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            },
+        ]
+      [32m+[0m[0m name                   = "app-tier-sg"
+      [32m+[0m[0m name_prefix            = (known after apply)
+      [32m+[0m[0m owner_id               = (known after apply)
+      [32m+[0m[0m revoke_rules_on_delete = false
+      [32m+[0m[0m tags_all               = (known after apply)
+      [32m+[0m[0m vpc_id                 = "vpc-08b2a79bfb666d646"
+    }
+
+[1m  # aws_security_group.db_sg[0m will be created
+[0m  [32m+[0m[0m resource "aws_security_group" "db_sg" {
+      [32m+[0m[0m arn                    = (known after apply)
+      [32m+[0m[0m description            = "Managed by Terraform"
+      [32m+[0m[0m egress                 = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m from_port        = 0
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "-1"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 0
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            },
+        ]
+      [32m+[0m[0m id                     = (known after apply)
+      [32m+[0m[0m ingress                = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "10.0.0.0/16",
+                ]
+              [32m+[0m[0m from_port        = 22
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 22
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = []
+              [32m+[0m[0m from_port        = 3306
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = (known after apply)
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 3306
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            },
+        ]
+      [32m+[0m[0m name                   = "db-tier-sg"
+      [32m+[0m[0m name_prefix            = (known after apply)
+      [32m+[0m[0m owner_id               = (known after apply)
+      [32m+[0m[0m revoke_rules_on_delete = false
+      [32m+[0m[0m tags_all               = (known after apply)
+      [32m+[0m[0m vpc_id                 = "vpc-08b2a79bfb666d646"
+    }
+
+[1m  # aws_security_group.web_sg[0m will be created
+[0m  [32m+[0m[0m resource "aws_security_group" "web_sg" {
+      [32m+[0m[0m arn                    = (known after apply)
+      [32m+[0m[0m description            = "Managed by Terraform"
+      [32m+[0m[0m egress                 = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m from_port        = 0
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "-1"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 0
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            },
+        ]
+      [32m+[0m[0m id                     = (known after apply)
+      [32m+[0m[0m ingress                = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m from_port        = 80
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 80
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "10.0.0.0/16",
+                ]
+              [32m+[0m[0m from_port        = 22
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 22
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            },
+        ]
+      [32m+[0m[0m name                   = "web-tier-sg"
+      [32m+[0m[0m name_prefix            = (known after apply)
+      [32m+[0m[0m owner_id               = (known after apply)
+      [32m+[0m[0m revoke_rules_on_delete = false
+      [32m+[0m[0m tags_all               = (known after apply)
+      [32m+[0m[0m vpc_id                 = "vpc-08b2a79bfb666d646"
+    }
+
+[1mPlan:[0m [0m9 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  [32m+[0m[0m app_private_ip = "10.0.2.150"
+  [32m+[0m[0m web_private_ip = "10.0.1.191"
+[0m[1maws_security_group.web_sg: Creating...[0m[0m
+[0m[1maws_security_group.web_sg: Creation complete after 2s [id=sg-0d5e0feb34c7bb10e][0m
+[0m[1maws_security_group.app_sg: Creating...[0m[0m
+[0m[1maws_instance.web: Creating...[0m[0m
+[0m[1maws_security_group.app_sg: Creation complete after 3s [id=sg-04ef14f746d37378b][0m
+[0m[1maws_security_group.db_sg: Creating...[0m[0m
+[0m[1maws_instance.app: Creating...[0m[0m
+[0m[1maws_security_group.db_sg: Creation complete after 2s [id=sg-00c9ab0bf17bf9a49][0m
+[0m[1maws_instance.db: Creating...[0m[0m
+[0m[1maws_instance.web: Still creating... [00m10s elapsed][0m[0m
+[0m[1maws_instance.app: Still creating... [00m10s elapsed][0m[0m
+[0m[1maws_instance.web: Creation complete after 13s [id=i-0ee6b7195fece062a][0m
+[0m[1maws_eip.web_eip: Creating...[0m[0m
+[0m[1maws_instance.app: Creation complete after 12s [id=i-0be90b542d5f628f2][0m
+[0m[1maws_eip.app_eip: Creating...[0m[0m
+[0m[1maws_instance.db: Still creating... [00m10s elapsed][0m[0m
+[0m[1maws_eip.web_eip: Creation complete after 3s [id=eipalloc-006d7ec4a6cc519b8][0m
+[0m[1maws_instance.db: Creation complete after 13s [id=i-0a3878e947f0065e6][0m
+[0m[1maws_eip.db_eip: Creating...[0m[0m
+[0m[1maws_eip.app_eip: Creation complete after 3s [id=eipalloc-0007c7b873bf11d1a][0m
+[0m[1maws_eip.db_eip: Creation complete after 3s [id=eipalloc-01c98ff79d25f3865][0m
+[0m[1m[32m
+Apply complete! Resources: 9 added, 0 changed, 0 destroyed.[0m
+[0m[1m[32m
+Outputs:
+
+[0mapp_private_ip = "10.0.2.150"
+web_private_ip = "10.0.1.191"
+[Pipeline] sh
++ terraform output -raw app_private_ip
+[Pipeline] sh
++ terraform output -raw web_private_ip
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Security: App (Trivy))
+[Pipeline] echo
+Scanning Backend Code...
+[Pipeline] sh
++ trivy fs app/ --scanners vuln --severity HIGH,CRITICAL
+2026-01-26T14:57:57Z	INFO	[vulndb] Need to update DB
+2026-01-26T14:57:57Z	INFO	[vulndb] Downloading vulnerability DB...
+2026-01-26T14:57:57Z	INFO	[vulndb] Downloading artifact...	repo="mirror.gcr.io/aquasec/trivy-db:2"
+27.71 MiB / 83.16 MiB [-------------------->________________________________________] 33.32% ? p/s ?51.18 MiB / 83.16 MiB [------------------------------------->_______________________] 61.54% ? p/s ?78.57 MiB / 83.16 MiB [--------------------------------------------------------->___] 94.49% ? p/s ?83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 92.33 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 92.33 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 92.33 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 86.38 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 86.38 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 86.38 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 80.80 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 80.80 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 80.80 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 75.59 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 75.59 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 75.59 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 70.71 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 70.71 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [---------------------------------------------->] 100.00% 70.71 MiB p/s ETA 0s83.16 MiB / 83.16 MiB [-------------------------------------------------] 100.00% 24.26 MiB p/s 3.6s2026-01-26T14:58:01Z	INFO	[vulndb] Artifact successfully downloaded	repo="mirror.gcr.io/aquasec/trivy-db:2"
+2026-01-26T14:58:01Z	INFO	[vuln] Vulnerability scanning is enabled
+2026-01-26T14:58:01Z	WARN	[pip] Unable to find python `site-packages` directory. License detection is skipped.	err="site-packages directory not found"
+2026-01-26T14:58:01Z	INFO	Number of language-specific files	num=1
+2026-01-26T14:58:01Z	INFO	[pip] Detecting vulnerabilities...
+
+Report Summary
+
+┌──────────────────┬──────┬─────────────────┐
+│      Target      │ Type │ Vulnerabilities │
+├──────────────────┼──────┼─────────────────┤
+│ requirements.txt │ pip  │        1        │
+└──────────────────┴──────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+For OSS Maintainers: VEX Notice
+--------------------------------
+If you're an OSS maintainer and Trivy has detected vulnerabilities in your project that you believe are not actually exploitable, consider issuing a VEX (Vulnerability Exploitability eXchange) statement.
+VEX allows you to communicate the actual status of vulnerabilities in your project, improving security transparency and reducing false positives for your users.
+Learn more and start using VEX: https://trivy.dev/docs/v0.68/guide/supply-chain/vex/repo#publishing-vex-documents
+
+To disable this notice, set the TRIVY_DISABLE_VEX_NOTICE environment variable.
+
+
+requirements.txt (pip)
+======================
+Total: 1 (HIGH: 1, CRITICAL: 0)
+
+┌──────────┬────────────────┬──────────┬────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
+│ Library  │ Vulnerability  │ Severity │ Status │ Installed Version │ Fixed Version │                            Title                             │
+├──────────┼────────────────┼──────────┼────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ requests │ CVE-2018-18074 │ HIGH     │ fixed  │ 2.0.0             │ 2.20.0        │ python-requests: Redirect from HTTPS to HTTP does not remove │
+│          │                │          │        │                   │               │ Authorization header                                         │
+│          │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2018-18074                   │
+└──────────┴────────────────┴──────────┴────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────────┘
+[Pipeline] echo
+Scanning Frontend Code...
+[Pipeline] sh
++ trivy fs frontend/ --scanners vuln --severity HIGH,CRITICAL
+2026-01-26T14:58:03Z	INFO	[vuln] Vulnerability scanning is enabled
+2026-01-26T14:58:03Z	WARN	[pip] Unable to find python `site-packages` directory. License detection is skipped.	err="site-packages directory not found"
+2026-01-26T14:58:03Z	INFO	Number of language-specific files	num=0
+2026-01-26T14:58:03Z	WARN	[report] Supported files for scanner(s) not found.	scanners=[vuln]
+
+Report Summary
+
+┌────────┬──────┬─────────────────┐
+│ Target │ Type │ Vulnerabilities │
+├────────┼──────┼─────────────────┤
+│   -    │  -   │        -        │
+└────────┴──────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy: Update App)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] readFile
+[Pipeline] readFile
+[Pipeline] sshagent
+[ssh-agent] Using credentials ec2-user
+$ ssh-agent
+SSH_AUTH_SOCK=/tmp/ssh-A59XQcRiWgFC/agent.7354
+SSH_AGENT_PID=7357
+Running ssh-add (command line suppressed)
+Identity added: /var/lib/jenkins/workspace/DevSecOps-Pipeline@tmp/private_key_11870936396981477240.key (/var/lib/jenkins/workspace/DevSecOps-Pipeline@tmp/private_key_11870936396981477240.key)
+[ssh-agent] Started.
+[Pipeline] {
+[Pipeline] echo
+Deploying to App Server (10.0.2.150)...
+[Pipeline] sh
++ ssh -o StrictHostKeyChecking=no ec2-user@10.0.2.150 
+                                # STEP A: WAIT FOR USER_DATA (Cloud-Init) TO FINISH
+                                echo "Checking if server setup is complete..."
+                                while [ ! -f /var/lib/cloud/instance/boot-finished ]; do
+                                    echo "Server is still initializing... waiting 10s"
+                                    sleep 10
+                                done
+                                echo "Server is ready!"
+
+                                # STEP B: DEPLOY CODE
+                                sudo chown -R ec2-user:ec2-user /home/ec2-user/3-tier-app
+                                git config --global --add safe.directory /home/ec2-user/3-tier-app
+                                
+                                # Clone or Update Repo
+                                if [ -d "3-tier-app" ]; then
+                                    cd 3-tier-app
+                                    git remote set-url origin https://github.com/0mBarde/3-tier-app.git
+                                    git fetch origin
+                                    git reset --hard origin/main
+                                else
+                                    git clone https://github.com/0mBarde/3-tier-app.git 3-tier-app
+                                    cd 3-tier-app
+                                fi
+                                
+                                # Install Dependencies & Restart Service
+                                pip3 install -r app/requirements.txt
+                                sudo systemctl restart backend
+                            
+Warning: Permanently added '10.0.2.150' (ED25519) to the list of known hosts.
+Checking if server setup is complete...
+Server is still initializing... waiting 10s
+Server is ready!
+From https://github.com/0mBarde/3-tier-app
+ + c93cae7...a8ed539 main       -> origin/main  (forced update)
+HEAD is now at a8ed539 changed the app infra instances to large model
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: flask in /usr/local/lib/python3.9/site-packages (from -r app/requirements.txt (line 1)) (3.1.2)
+Collecting requests==2.0.0
+  Downloading requests-2.0.0-py2.py3-none-any.whl (391 kB)
+Requirement already satisfied: itsdangerous>=2.2.0 in /usr/local/lib/python3.9/site-packages (from flask->-r app/requirements.txt (line 1)) (2.2.0)
+Requirement already satisfied: blinker>=1.9.0 in /usr/local/lib/python3.9/site-packages (from flask->-r app/requirements.txt (line 1)) (1.9.0)
+Requirement already satisfied: importlib-metadata>=3.6.0 in /usr/local/lib/python3.9/site-packages (from flask->-r app/requirements.txt (line 1)) (8.7.1)
+Requirement already satisfied: werkzeug>=3.1.0 in /usr/local/lib/python3.9/site-packages (from flask->-r app/requirements.txt (line 1)) (3.1.5)
+Requirement already satisfied: markupsafe>=2.1.1 in /usr/local/lib64/python3.9/site-packages (from flask->-r app/requirements.txt (line 1)) (3.0.3)
+Requirement already satisfied: jinja2>=3.1.2 in /usr/local/lib/python3.9/site-packages (from flask->-r app/requirements.txt (line 1)) (3.1.6)
+Requirement already satisfied: click>=8.1.3 in /usr/local/lib/python3.9/site-packages (from flask->-r app/requirements.txt (line 1)) (8.1.8)
+Requirement already satisfied: zipp>=3.20 in /usr/local/lib/python3.9/site-packages (from importlib-metadata>=3.6.0->flask->-r app/requirements.txt (line 1)) (3.23.0)
+Installing collected packages: requests
+Successfully installed requests-2.0.0
+[Pipeline] echo
+Deploying to Web Server (10.0.1.191)...
+[Pipeline] sh
++ ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.191 
+                                # STEP A: WAIT FOR USER_DATA (Cloud-Init) TO FINISH
+                                echo "Checking if server setup is complete..."
+                                while [ ! -f /var/lib/cloud/instance/boot-finished ]; do
+                                    echo "Server is still initializing... waiting 10s"
+                                    sleep 10
+                                done
+                                echo "Server is ready!"
+
+                                # STEP B: DEPLOY CODE
+                                sudo chown -R ec2-user:ec2-user /home/ec2-user/3-tier-app
+                                git config --global --add safe.directory /home/ec2-user/3-tier-app
+                                
+                                if [ -d "3-tier-app" ]; then
+                                    cd 3-tier-app
+                                    git remote set-url origin https://github.com/0mBarde/3-tier-app.git
+                                    git fetch origin
+                                    git reset --hard origin/main
+                                else
+                                    git clone https://github.com/0mBarde/3-tier-app.git 3-tier-app
+                                    cd 3-tier-app
+                                fi
+                                
+                                pip3 install -r frontend/requirements.txt
+                                sudo systemctl restart frontend
+                            
+Warning: Permanently added '10.0.1.191' (ED25519) to the list of known hosts.
+Checking if server setup is complete...
+Server is still initializing... waiting 10s
+Server is still initializing... waiting 10s
+Server is ready!
+From https://github.com/0mBarde/3-tier-app
+ + c93cae7...a8ed539 main       -> origin/main  (forced update)
+HEAD is now at a8ed539 changed the app infra instances to large model
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: streamlit in /home/ec2-user/.local/lib/python3.9/site-packages (from -r frontend/requirements.txt (line 1)) (1.50.0)
+Requirement already satisfied: requests in /home/ec2-user/.local/lib/python3.9/site-packages (from -r frontend/requirements.txt (line 2)) (2.32.5)
+Requirement already satisfied: pandas in /home/ec2-user/.local/lib/python3.9/site-packages (from -r frontend/requirements.txt (line 3)) (2.3.3)
+Requirement already satisfied: numpy<3,>=1.23 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (2.0.2)
+Requirement already satisfied: blinker<2,>=1.5.0 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (1.9.0)
+Requirement already satisfied: tenacity<10,>=8.1.0 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (9.1.2)
+Requirement already satisfied: click<9,>=7.0 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (8.1.8)
+Requirement already satisfied: pydeck<1,>=0.8.0b4 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (0.9.1)
+Requirement already satisfied: cachetools<7,>=4.0 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (6.2.5)
+Requirement already satisfied: gitpython!=3.1.19,<4,>=3.0.7 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (3.1.46)
+Requirement already satisfied: toml<2,>=0.10.1 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (0.10.2)
+Requirement already satisfied: altair!=5.4.0,!=5.4.1,<6,>=4.0 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (5.5.0)
+Requirement already satisfied: pillow<12,>=7.1.0 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (11.3.0)
+Requirement already satisfied: pyarrow>=7.0 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (21.0.0)
+Requirement already satisfied: watchdog<7,>=2.1.5 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (6.0.0)
+Requirement already satisfied: tornado!=6.5.0,<7,>=6.0.3 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (6.5.4)
+Requirement already satisfied: protobuf<7,>=3.20 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (6.33.4)
+Requirement already satisfied: packaging<26,>=20 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (25.0)
+Requirement already satisfied: typing-extensions<5,>=4.4.0 in /home/ec2-user/.local/lib/python3.9/site-packages (from streamlit->-r frontend/requirements.txt (line 1)) (4.15.0)
+Requirement already satisfied: certifi>=2017.4.17 in /home/ec2-user/.local/lib/python3.9/site-packages (from requests->-r frontend/requirements.txt (line 2)) (2026.1.4)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/lib/python3.9/site-packages (from requests->-r frontend/requirements.txt (line 2)) (1.25.10)
+Requirement already satisfied: idna<4,>=2.5 in /usr/lib/python3.9/site-packages (from requests->-r frontend/requirements.txt (line 2)) (2.10)
+Requirement already satisfied: charset_normalizer<4,>=2 in /home/ec2-user/.local/lib/python3.9/site-packages (from requests->-r frontend/requirements.txt (line 2)) (3.4.4)
+Requirement already satisfied: pytz>=2020.1 in /usr/lib/python3.9/site-packages (from pandas->-r frontend/requirements.txt (line 3)) (2022.7.1)
+Requirement already satisfied: python-dateutil>=2.8.2 in /home/ec2-user/.local/lib/python3.9/site-packages (from pandas->-r frontend/requirements.txt (line 3)) (2.9.0)
+Requirement already satisfied: tzdata>=2022.7 in /home/ec2-user/.local/lib/python3.9/site-packages (from pandas->-r frontend/requirements.txt (line 3)) (2025.3)
+Requirement already satisfied: jsonschema>=3.0 in /usr/lib/python3.9/site-packages (from altair!=5.4.0,!=5.4.1,<6,>=4.0->streamlit->-r frontend/requirements.txt (line 1)) (3.2.0)
+Requirement already satisfied: narwhals>=1.14.2 in /home/ec2-user/.local/lib/python3.9/site-packages (from altair!=5.4.0,!=5.4.1,<6,>=4.0->streamlit->-r frontend/requirements.txt (line 1)) (2.15.0)
+Requirement already satisfied: jinja2 in /usr/lib/python3.9/site-packages (from altair!=5.4.0,!=5.4.1,<6,>=4.0->streamlit->-r frontend/requirements.txt (line 1)) (2.11.3)
+Requirement already satisfied: gitdb<5,>=4.0.1 in /home/ec2-user/.local/lib/python3.9/site-packages (from gitpython!=3.1.19,<4,>=3.0.7->streamlit->-r frontend/requirements.txt (line 1)) (4.0.12)
+Requirement already satisfied: six>=1.5 in /usr/lib/python3.9/site-packages (from python-dateutil>=2.8.2->pandas->-r frontend/requirements.txt (line 3)) (1.15.0)
+Requirement already satisfied: smmap<6,>=3.0.1 in /home/ec2-user/.local/lib/python3.9/site-packages (from gitdb<5,>=4.0.1->gitpython!=3.1.19,<4,>=3.0.7->streamlit->-r frontend/requirements.txt (line 1)) (5.0.2)
+Requirement already satisfied: MarkupSafe>=0.23 in /usr/lib64/python3.9/site-packages (from jinja2->altair!=5.4.0,!=5.4.1,<6,>=4.0->streamlit->-r frontend/requirements.txt (line 1)) (1.1.1)
+Requirement already satisfied: attrs>=17.4.0 in /usr/lib/python3.9/site-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<6,>=4.0->streamlit->-r frontend/requirements.txt (line 1)) (20.3.0)
+Requirement already satisfied: pyrsistent>=0.14.0 in /usr/lib64/python3.9/site-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<6,>=4.0->streamlit->-r frontend/requirements.txt (line 1)) (0.17.3)
+Requirement already satisfied: setuptools in /usr/lib/python3.9/site-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<6,>=4.0->streamlit->-r frontend/requirements.txt (line 1)) (59.6.0)
+[Pipeline] }
+$ ssh-agent -k
+unset SSH_AUTH_SOCK;
+unset SSH_AGENT_PID;
+echo Agent pid 7357 killed;
+[ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
